@@ -41,6 +41,11 @@ class MessageHandler(BaseHTTPRequestHandler):
         memory.append(message)
 
         # 1. Send a 303 redirect back to the root page.
+        self.send_response(303)
+        self.send_header('Content-type', 'text/html; charset=utf-8')
+        self.send_header('Location', '/')#This will navigate to original page
+        # above line taken from https://stackoverflow.com/questions/37445901/how-to-return-http-303-from-python
+        self.end_headers()
 
     def do_GET(self):
         # First, send a 200 OK response.
@@ -51,8 +56,10 @@ class MessageHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
         # 2. Put the response together out of the form and the stored messages.
-
+       # response = form + memory["message"]
+        response = form.format("\n".join( memory))
         # 3. Send the response.
+        self.wfile.write(response.encode())
 
 if __name__ == '__main__':
     server_address = ('', 8000)
